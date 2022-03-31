@@ -3,10 +3,13 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 
+
 class Sakai:
 
     def __init__(self):
         self.authenticated = False
+        # option = webdriver.ChromeOptions()
+        # option.add_argument("headless")
         self.driver = webdriver.Edge()
 
         # open the portal
@@ -43,6 +46,9 @@ class Sakai:
             self.driver.close()
 
     def get_courses(self):
+        """
+        :return: a list of current courses if and only if authenticated
+        """
         if self.authenticated:
             # click the view_all_sites btn
             all_sites_btn = self.driver.find_element(by=By.ID, value="viewAllSites")
@@ -59,7 +65,6 @@ class Sakai:
 
     def get_assignments(self, course_elements):
         """
-
         :param course_elements: a list of <div class="fav-title"> elements containing links to individual course pages
         :return:
         """
@@ -82,6 +87,6 @@ student_pin = input("Password: ")
 f = Sakai()
 f.login(student_id, student_pin)
 
-# List of courses for this semester
+# # List of courses for this semester
 courses = f.get_courses()
 for i in courses: print(i)
