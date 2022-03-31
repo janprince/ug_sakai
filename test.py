@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 # sakai url
 url = "https://sakai.ug.edu.gh"
 
-driver = webdriver.Chrome()
+driver = webdriver.Edge()
 driver.get(url)
 
 # get input fields
@@ -16,8 +16,10 @@ submit = driver.find_element(by=By.NAME, value='submit')
 # login
 stud_id.clear()
 stud_id.send_keys("10839289")
-stud_pin.send_keys("81364")
+stud_pin.send_keys("8136")
 submit.send_keys(Keys.RETURN)
+
+assert "Your credentials were incorrect." not in driver.page_source
 
 # click the view_all_sites btn
 all_sites_btn = driver.find_element(by=By.ID, value="viewAllSites")
