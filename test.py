@@ -25,8 +25,8 @@ all_sites_btn.send_keys(Keys.RETURN)
 
 # get the div containing this semester's courses
 div_sem = driver.find_element(by=By.CLASS_NAME, value="fav-sites-term")    # the first div with class= "fav-sites-term"
-some = div_sem.find_elements(by=By.CLASS_NAME, value="fav-title")   #
-print(type(some))
+course_elements = div_sem.find_elements(by=By.CLASS_NAME, value="fav-title")   #
 
-for i in some:
-    print(i.text)
+# link to individual course pages
+course_link = course_elements[0].find_element(by=By.TAG_NAME, value='a')
+course_link.send_keys(Keys.RETURN)
