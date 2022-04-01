@@ -1,15 +1,14 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-
-
+import pprint
 
 class Sakai:
 
     def __init__(self):
         self.authenticated = False
-        # option = webdriver.ChromeOptions()
-        # option.add_argument("headless")
+        self.course_elements = []
+        self.no_courses = 0
         self.driver = webdriver.Edge()
 
         # open the portal
@@ -56,22 +55,88 @@ class Sakai:
 
             # get the div containing this semester's courses
             div_sem = self.driver.find_element(by=By.CLASS_NAME, value="fav-sites-term")
-            course_elements = div_sem.find_elements(by=By.CLASS_NAME, value="fav-title")
+            self.course_elements = div_sem.find_elements(by=By.CLASS_NAME, value="fav-title")
 
-            course_titles = [title.text for title in course_elements]
+            course_titles = [title.text for title in self.course_elements]
             return course_titles
         else:
             print("Please Authenticate by logging in.")
 
-    def get_assignments(self, course_elements):
+    def get_assignments(self):
         """
         :param course_elements: a list of <div class="fav-title"> elements containing links to individual course pages
         :return:
         """
 
-        # link to individual course pages
-        course_link = course_elements[0].find_element(by=By.TAG_NAME, value='a')
-        course_link.send_keys(Keys.RETURN)
+        # get courses
+        self.get_courses()
+
+        assignments = {}
+
+        for i in range(len(self.course_elements)):
+            self.get_courses()
+
+            course = self.course_elements[i]
+
+            # course_title
+            course_title = course.text
+
+            # link to individual course pages
+            course_link = course.find_element(by=By.TAG_NAME, value='a')
+            course_link.send_keys(Keys.RETURN)
+
+            # get all the links of the options on the nav menu
+            nav_item_links = self.driver.find_elements(by=By.CLASS_NAME, value="Mrphs-toolsNav__menuitem--link ")
+
+            # filter for link containing the text: "Assignments"
+            assignment_link = [link for link in nav_item_links if link.text == "Assignments"]
+            assignment_link[0].send_keys(Keys.RETURN)
+
+            # confirm existence of assignments
+            try:
+                assert "There are currently no assignments at this location." not in self.driver.page_source
+            except AssertionError:
+                assignments[course_title] = "There are currently no assignments."
+                self.driver.back()
+                self.driver.back()
+                self.driver.back()
+                self.get_courses()
+                continue
+
+            # get the assignments table
+            assignment_table = self.driver.find_element(by=By.CLASS_NAME, value="table")
+
+            # extract all rows from the table
+            assignment_table_rows = assignment_table.find_elements(by=By.TAG_NAME, value="tr")
+
+            data = []
+
+            # extracting data from rows
+            for row in assignment_table_rows:
+                if assignment_table_rows.index(row) == 0:
+                    # table header cells
+                    cells = row.find_elements(by=By.TAG_NAME, value="th")
+                else:
+                    # table data cells
+                    cells = row.find_elements(by=By.TAG_NAME, value="td")
+
+                row_data = []
+                # data from cells
+                for cell_data in cells[1:]:
+                    row_data.append(cell_data.text)
+
+                data.append(row_data)
+
+
+            assignments[course_title] = data
+
+            self.driver.back()
+            self.driver.back()
+            self.driver.back()
+            self.get_courses()
+
+
+        return assignments
 
 
     def sync_assignments(self):
@@ -88,5 +153,5 @@ f = Sakai()
 f.login(student_id, student_pin)
 
 # # List of courses for this semester
-courses = f.get_courses()
-for i in courses: print(i)
+assignments = f.get_assignments()
+pprint.pprint(assignments)
