@@ -74,8 +74,6 @@ class Sakai:
         assignments = {}
 
         for i in range(len(self.course_elements)):
-            self.get_courses()
-
             course = self.course_elements[i]
 
             # course_title
@@ -97,10 +95,11 @@ class Sakai:
                 assert "There are currently no assignments at this location." not in self.driver.page_source
             except AssertionError:
                 assignments[course_title] = "There are currently no assignments."
-                self.driver.back()
-                self.driver.back()
-                self.driver.back()
-                self.get_courses()
+                if i != len(self.course_elements) - 1:
+                    self.driver.back()
+                    self.driver.back()
+                    self.driver.back()
+                    self.get_courses()
                 continue
 
             # get the assignments table
@@ -130,10 +129,11 @@ class Sakai:
 
             assignments[course_title] = data
 
-            self.driver.back()
-            self.driver.back()
-            self.driver.back()
-            self.get_courses()
+            if i != len(self.course_elements) - 1:
+                self.driver.back()
+                self.driver.back()
+                self.driver.back()
+                self.get_courses()
 
 
         return assignments
