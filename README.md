@@ -9,4 +9,4 @@ Sakai was created with scalability, dependability, interoperability,
 and extensibility in mind. Its largest installations support more 
 than 100,000 users.
 
-This project focuses on scraping data from the University of Ghana's clone of Sakai.
+This project focuses on scraping **time-bound information** from the University of Ghana's clone of Sakai.
