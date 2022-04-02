@@ -2,14 +2,19 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import pprint
+import getpass
 
 class Sakai:
 
     def __init__(self):
         self.authenticated = False
         self.course_elements = []
-        self.no_courses = 0
-        self.driver = webdriver.Edge()
+
+        # Edge
+        self.driver = webdriver.Edge("drivers/msedgedriver.exe")
+
+        # Chrome
+        # self.driver = webdriver.Edge("drivers/chromedriver.exe") #
 
         # open the portal
         self.driver.get("https://sakai.ug.edu.gh")
@@ -96,9 +101,6 @@ class Sakai:
             except AssertionError:
                 assignments[course_title] = "There are currently no assignments."
                 if i != len(self.course_elements) - 1:
-                    self.driver.back()
-                    self.driver.back()
-                    self.driver.back()
                     self.get_courses()
                 continue
 
@@ -130,9 +132,6 @@ class Sakai:
             assignments[course_title] = data
 
             if i != len(self.course_elements) - 1:
-                self.driver.back()
-                self.driver.back()
-                self.driver.back()
                 self.get_courses()
 
 
@@ -148,6 +147,7 @@ class Sakai:
 
 
 student_id = input("Student_Id: ")
+# student_pin = getpass.getpass("Password: ", stream=None) # hides password when typing
 student_pin = input("Password: ")
 f = Sakai()
 f.login(student_id, student_pin)
