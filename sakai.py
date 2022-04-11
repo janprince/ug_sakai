@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 import pprint
 import getpass
 
+
 class Sakai:
 
     def __init__(self):
@@ -128,12 +129,10 @@ class Sakai:
 
                 data.append(row_data)
 
-
             assignments[course_title] = data
 
             if i != len(self.course_elements) - 1:
                 self.get_courses()
-
 
         return assignments
 
